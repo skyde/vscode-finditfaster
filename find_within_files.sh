@@ -77,14 +77,6 @@ if [[ "$PREVIEW_ENABLED" -eq 1 ]]; then
     PREVIEW_STR=(--preview "$PREVIEW_COMMAND" --preview-window "$PREVIEW_WINDOW")
 fi
 
-# dummy fallback binding because fzf v<0.36 does not support `load` and I did not figure out how to
-# conditionally set the entire binding string (i.e., with the "--bind" part)
-RESUME_POS_BINDING="backward-eof:ignore"
-if [[ "$(printf '%s\n' "$FZF_VER_NUM" "0.36" | sort -V | head -n 1)" == "0.36" ]]; then
-    # fzf version is greater or equal 0.36, so the `load` trigger is supported
-    RESUME_POS_BINDING="load:pos($INITIAL_POS)"
-fi
-
 RG_QUERY_PARSING="{q}"
 if [[ "$FUZZ_RG_QUERY" -eq 1 ]]; then
     RG_QUERY_PARSING="\$(echo {q} | sed 's/ /.*/g')"
@@ -111,7 +103,6 @@ IFS=: read -ra VAL < <(
       --delimiter : \
       --history $LAST_QUERY_FILE \
       --bind "enter:execute(echo {n} > $LAST_POS_FILE)+accept" \
-      --bind "$RESUME_POS_BINDING" \
       --phony --query "$INITIAL_QUERY" \
       ${PREVIEW_STR[@]+"${PREVIEW_STR[@]}"} \
 )
